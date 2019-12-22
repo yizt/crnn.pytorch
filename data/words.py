@@ -40,7 +40,7 @@ class Word(object):
 
     @classmethod
     def get_chinese_words(cls):
-        f = codecs.open('./chinese_word.txt', mode='r', encoding='utf-8')
+        f = codecs.open('data/chinese_word.txt', mode='r', encoding='utf-8')
         lines = f.readlines()
         f.close()
         lines = [l.strip() for l in lines]
@@ -55,7 +55,7 @@ class Word(object):
         return '$¥'
 
     def get_all_words(self):
-        words = ''
+        words = ' '
         if self.chinese_word:
             words += self.get_chinese_words()
         if self.alphabet:
