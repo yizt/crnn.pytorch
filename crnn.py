@@ -26,8 +26,8 @@ class CRNN(nn.Module):
             ('conv_block_3_2', _ConvBlock(256, 256)),  # [B,256,W/4,8]
             ('max_pool_3', nn.MaxPool2d((1, 2), 2)),  # [B,256,W/8,4]
 
-            ('conv_block_4_1', _ConvBlock(256, 512)),  # [B,512,W/8,4]
-            ('conv_block_4_2', _ConvBlock(512, 512)),  # [B,512,W/8,4]
+            ('conv_block_4_1', _ConvBlock(256, 512, bn=True)),  # [B,512,W/8,4]
+            ('conv_block_4_2', _ConvBlock(512, 512, bn=True)),  # [B,512,W/8,4]
             ('max_pool_4', nn.MaxPool2d((1, 2), 2)),  # [B,512,W/16,2]
 
             ('conv_block_5', _ConvBlock(512, 512, kernel_size=2, padding=0))  # [B,512,W/16,1]
@@ -53,10 +53,11 @@ class CRNN(nn.Module):
 
 
 class _ConvBlock(nn.Sequential):
-    def __init__(self, in_channels, out_channels, kernel_size=3, stride=1, padding=1):
+    def __init__(self, in_channels, out_channels, kernel_size=3, stride=1, padding=1, bn=False):
         super(_ConvBlock, self).__init__()
         self.add_module('conv', nn.Conv2d(in_channels, out_channels, kernel_size, stride, padding))
-        self.add_module('norm', nn.BatchNorm2d(out_channels))
+        if bn:
+            self.add_module('norm', nn.BatchNorm2d(out_channels))
         self.add_module('relu', nn.ReLU(inplace=True))
 
 
