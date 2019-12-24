@@ -12,8 +12,6 @@ import numpy as np
 from PIL import Image, ImageDraw, ImageFont
 from torch.utils.data.dataset import Dataset
 
-from data.words import Word
-
 
 def random_color():
     return [random.randint(100, 255), random.randint(100, 255), random.randint(100, 255)]
@@ -39,10 +37,10 @@ def put_text(image, x, y, text, font, color=None):
 
 
 class Generator(Dataset):
-    def __init__(self):
+    def __init__(self, alpha):
         super(Generator, self).__init__()
         # self.alpha = ' 0123456789abcdefghijklmnopqrstuvwxyz'
-        self.alpha = Word().get_all_words()
+        self.alpha = alpha
         self.min_len = 5
         self.max_len_list = [16, 19, 24, 26]
         self.max_len = max(self.max_len_list)
@@ -80,11 +78,28 @@ class Generator(Dataset):
 
 
 def test_image_gen():
-    gen = Generator()
+    from data.words import Word
+    gen = Generator(Word().get_all_words())
     im, indices, target_len = gen.gen_image()
-    cv2.imwrite('examples.jpg', im)
+    cv2.imwrite('images/examples.jpg', im)
     print(''.join([gen.alpha[i] for i in indices]))
 
 
+def test_gen():
+    from data.words import Word
+    gen = Generator(Word().get_all_words())
+    for x in gen:
+        print(x[1])
+
+
+def test_font_size():
+    font = ImageFont.truetype('fonts/simsun.ttc')
+    print(font.size)
+    font.size=20
+    print(font.size)
+
+
 if __name__ == '__main__':
-    test_image_gen()
+    # test_image_gen()
+    # test_gen()
+    test_font_size()
