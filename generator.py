@@ -78,11 +78,12 @@ class Generator(Dataset):
 
 
 def test_image_gen():
-    from data.words import Word
-    gen = Generator(Word().get_all_words())
-    im, indices, target_len = gen.gen_image()
-    cv2.imwrite('images/examples.jpg', im)
-    print(''.join([gen.alpha[i] for i in indices]))
+    from config import cfg
+    gen = Generator(cfg.word.get_all_words())
+    for i in range(10):
+        im, indices, target_len = gen.gen_image()
+        cv2.imwrite('images/examples-{:02d}.jpg'.format(i + 1), im)
+        print(''.join([gen.alpha[j] for j in indices]))
 
 
 def test_gen():
@@ -95,11 +96,11 @@ def test_gen():
 def test_font_size():
     font = ImageFont.truetype('fonts/simsun.ttc')
     print(font.size)
-    font.size=20
+    font.size = 20
     print(font.size)
 
 
 if __name__ == '__main__':
-    # test_image_gen()
+    test_image_gen()
     # test_gen()
-    test_font_size()
+    # test_font_size()
