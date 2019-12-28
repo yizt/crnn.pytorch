@@ -65,7 +65,7 @@ def train_one_epoch(model, criterion, optimizer, data_loader, device, epoch, arg
         outputs = model(image.to(torch.float32))  # [B,N,C]
         outputs = torch.log_softmax(outputs, dim=2)
         outputs = outputs.permute([1, 0, 2])  # [N,B,C]
-        loss = criterion(outputs[2:], target, input_len, target_len)
+        loss = criterion(outputs[:], target, input_len, target_len)
         # 梯度更新
         model.zero_grad()
         loss.backward()

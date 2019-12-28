@@ -55,7 +55,7 @@ class Generator(Dataset):
         indices = np.random.choice(range(1, len(self.alpha)), target_len)
         text = [self.alpha[idx] for idx in indices]
         color = random_color()
-        image = put_text(image, 32, np.random.randint(1, 32 - self.font_size_list[idx]), ''.join(text),
+        image = put_text(image, 3, np.random.randint(1, 32 - self.font_size_list[idx]), ''.join(text),
                          self.font_list[idx], tuple(color))
         image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
         if random.random() > 0.5:
@@ -70,7 +70,7 @@ class Generator(Dataset):
         image /= 0.5
         target = np.zeros(shape=(self.max_len,), dtype=np.long)
         target[:target_len] = indices
-        input_len = 31 - 2
+        input_len = 31
         return image, target, input_len, target_len
 
     def __len__(self):

@@ -30,7 +30,7 @@ def main(args):
     image = torch.FloatTensor(image)
 
     predict = net(image)[0].detach().numpy()  # [W,num_classes]
-    label = np.argmax(predict[2:], axis=1)
+    label = np.argmax(predict[:], axis=1)
     label = [alpha[class_id] for class_id in label]
     print(''.join(label))
     label = [k for k, g in itertools.groupby(list(label))]
