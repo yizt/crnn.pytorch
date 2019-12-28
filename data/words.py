@@ -6,6 +6,7 @@
  @Description    :
 """
 import codecs
+import os
 
 
 class Word(object):
@@ -40,7 +41,9 @@ class Word(object):
 
     @classmethod
     def get_chinese_words(cls):
-        f = codecs.open('data/chinese_word.txt', mode='r', encoding='utf-8')
+        cur_dir = os.path.dirname(__file__)
+        f = codecs.open(os.path.join(cur_dir, 'chinese_word.txt'),
+                        mode='r', encoding='utf-8')
         lines = f.readlines()
         f.close()
         lines = [l.strip() for l in lines]
@@ -71,6 +74,7 @@ class Word(object):
 
 if __name__ == "__main__":
     w = Word()
+    print(len(w.get_all_words()) == len(set(w.get_all_words())))
     print(w.get_chinese_words())
     print(w.get_all_words())
     print(w.get_all_words().__contains__(' '))
