@@ -15,6 +15,7 @@ from torch import optim
 from torch.nn import CTCLoss
 from torch.utils.data.dataloader import DataLoader
 from tqdm import tqdm
+from tensorboardX import SummaryWriter
 
 import crnn
 from generator import Generator
@@ -57,6 +58,11 @@ def init_distributed_mode(args):
         setup_for_distributed(args.local_rank == 0)
 
 
+def _add_weight_history(writer, net, epoch):
+    for name, param in net.named_parameters():
+        writer.add_histogram(name, param.clone().cpu().data.numpy(), epoch)
+
+
 def train_one_epoch(model, criterion, optimizer, data_loader, device, epoch, args):
     epoch_loss = 0.0
     for image, target, input_len, target_len in tqdm(data_loader):
@@ -75,8 +81,10 @@ def train_one_epoch(model, criterion, optimizer, data_loader, device, epoch, arg
         if np.isnan(loss.item()):
             print(target, input_len, target_len)
 
+    epoch_loss = epoch_loss / len(data_loader.dataset)
     # 打印日志,保存权重
-    print('Epoch: {}/{} loss: {:03f}'.format(epoch + 1, args.epochs, epoch_loss / len(data_loader.dataset)))
+    print('Epoch: {}/{} loss: {:03f}'.format(epoch + 1, args.epochs, epoch_loss))
+    return epoch_loss
 
 
 def train(args):
@@ -116,6 +124,8 @@ def train(args):
         optimizer.load_state_dict(checkpoint['optimizer'])
         lr_scheduler.load_state_dict(checkpoint['lr_scheduler'])
         model_without_ddp.load_state_dict(checkpoint['model'])
+    # log
+    writer = SummaryWriter(log_dir=cfg.log_dir)
 
     # train
     model.train()
@@ -123,9 +133,15 @@ def train(args):
     for epoch in range(args.init_epoch, args.epochs):
         if args.distributed:
             train_sampler.set_epoch(epoch)
-
-        train_one_epoch(model, criterion, optimizer, data_loader, device, epoch, args)
+        # 训练
+        loss = train_one_epoch(model, criterion, optimizer, data_loader, device, epoch, args)
+        # 记录日志
+        writer.add_scalar('scalar/lr', optimizer.param_groups[0]['lr'], epoch + 1)
+        writer.add_scalar('scalar/train_loss', loss, epoch + 1)
+        _add_weight_history(writer, model_without_ddp, epoch + 1)
+        # 更新lr
         lr_scheduler.step(epoch)
+
         # 保存模型
         if args.output_dir:
             checkpoint = {

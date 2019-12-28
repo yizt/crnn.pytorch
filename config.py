@@ -6,6 +6,7 @@
  @Description    : 配置类
 """
 from data.words import Word
+import time
 
 
 class Config(object):
@@ -18,6 +19,7 @@ class Config(object):
 
     def __init__(self):
         self.word = Word(self.chinese_word, self.alphabet, self.digit, self.punctuation, self.currency)
+        self.log_dir = 'log-{}'.format(time.strftime("%Y%m%d", time.localtime()))
 
 
 class TestConfig(Config):
