@@ -13,8 +13,10 @@ from PIL import Image, ImageDraw, ImageFont
 from torch.utils.data.dataset import Dataset
 
 
-def random_color():
-    return [random.randint(100, 255), random.randint(100, 255), random.randint(100, 255)]
+def random_color(lower_val, upper_val):
+    return [random.randint(lower_val, upper_val),
+            random.randint(lower_val, upper_val),
+            random.randint(lower_val, upper_val)]
 
 
 def put_text(image, x, y, text, font, color=None):
@@ -47,14 +49,26 @@ class Generator(Dataset):
         self.font_size_list = [30, 25, 20, 18]
         self.font_list = [ImageFont.truetype('fonts/simsun.ttc', size=s) for s in self.font_size_list]
 
+    @classmethod
+    def gen_background(cls):
+        a = random.random()
+        if a < 0.1:
+            return np.random.rand(32, 512, 3) * 100
+        elif a < 0.8:
+            return np.zeros((32, 512, 3)) * np.array(random_color(0, 100)) * 100 / 255
+        else:
+            b = random.random()
+            return b * np.random.rand(32, 512, 3) * 100 + \
+                   (1 - b) * np.zeros((32, 512, 3)) * np.array(random_color(0, 100)) * 100 / 255
+
     def gen_image(self):
         idx = np.random.randint(len(self.max_len_list))
-        image = np.random.rand(32, 512, 3) * 100
+        image = self.gen_background()
         image = image.astype(np.uint8)
         target_len = int(np.random.uniform(self.min_len, self.max_len_list[idx], size=1))
         indices = np.random.choice(range(1, len(self.alpha)), target_len)
         text = [self.alpha[idx] for idx in indices]
-        color = random_color()
+        color = random_color(105, 255)
         image = put_text(image, 3, np.random.randint(1, 32 - self.font_size_list[idx]), ''.join(text),
                          self.font_list[idx], tuple(color))
         image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
