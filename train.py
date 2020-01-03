@@ -16,7 +16,7 @@ from torch.nn import CTCLoss
 from torch.utils.data.dataloader import DataLoader
 from tqdm import tqdm
 from tensorboardX import SummaryWriter
-
+# from torch.utils.tensorboard import SummaryWriter
 import crnn
 from generator import Generator
 from config import cfg
@@ -56,11 +56,6 @@ def init_distributed_mode(args):
         torch.distributed.init_process_group(backend=args.dist_backend, init_method=args.dist_url,
                                              world_size=args.world_size, rank=args.rank)
         setup_for_distributed(args.local_rank == 0)
-
-
-def _add_weight_history(writer, net, epoch):
-    for name, param in net.named_parameters():
-        writer.add_histogram(name, param.clone().cpu().data.numpy(), epoch)
 
 
 def train_one_epoch(model, criterion, optimizer, data_loader, device, epoch, args):
@@ -125,7 +120,7 @@ def train(args):
         lr_scheduler.load_state_dict(checkpoint['lr_scheduler'])
         model_without_ddp.load_state_dict(checkpoint['model'])
     # log
-    writer = SummaryWriter(log_dir=cfg.log_dir)
+    writer = SummaryWriter(log_dir=cfg.log_dir) if utils.is_main_process() else None
 
     # train
     model.train()
@@ -136,9 +131,9 @@ def train(args):
         # 训练
         loss = train_one_epoch(model, criterion, optimizer, data_loader, device, epoch, args)
         # 记录日志
-        writer.add_scalar('scalar/lr', optimizer.param_groups[0]['lr'], epoch + 1)
-        writer.add_scalar('scalar/train_loss', loss, epoch + 1)
-        _add_weight_history(writer, model_without_ddp, epoch + 1)
+        utils.add_scalar_on_master(writer, 'scalar/lr', optimizer.param_groups[0]['lr'], epoch + 1)
+        utils.add_scalar_on_master(writer, 'scalar/train_loss', loss, epoch + 1)
+        utils.add_weight_history_on_master(writer, model_without_ddp, epoch + 1)
         # 更新lr
         lr_scheduler.step(epoch)
 
@@ -153,6 +148,8 @@ def train(args):
             utils.save_on_master(
                 checkpoint,
                 os.path.join(args.output_dir, 'crnn.{:03d}.pth'.format(epoch + 1)))
+    if utils.is_main_process():
+        writer.close()
 
 
 if __name__ == '__main__':

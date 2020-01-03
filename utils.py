@@ -36,3 +36,18 @@ def is_main_process():
 def save_on_master(*args, **kwargs):
     if is_main_process():
         torch.save(*args, **kwargs)
+
+
+def _add_weight_history(writer, net, epoch):
+    for name, param in net.named_parameters():
+        writer.add_histogram(name, param.clone().cpu().data.numpy(), epoch)
+
+
+def add_weight_history_on_master(writer, net, epoch):
+    if is_main_process():
+        _add_weight_history(writer, net, epoch)
+
+
+def add_scalar_on_master(writer, tag, scalar_value, global_step):
+    if is_main_process():
+        writer.add_scalar(tag, scalar_value, global_step)
