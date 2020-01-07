@@ -41,10 +41,15 @@ def put_text(image, x, y, text, font, color=None):
 
 
 class Generator(Dataset):
-    def __init__(self, alpha):
+    def __init__(self, alpha, direction='horizontal'):
+        """
+
+        :param alpha: 所有字符
+        :param direction: 文字方向：horizontal|vertical
+        """
         super(Generator, self).__init__()
-        # self.alpha = ' 0123456789abcdefghijklmnopqrstuvwxyz'
         self.alpha = alpha
+        self.direction = direction
         self.alpha_list = list(alpha)
         self.min_len = 5
         self.max_len_list = [16, 19, 24, 26]
@@ -55,18 +60,88 @@ class Generator(Dataset):
         for size in self.font_size_list:
             self.font_list.append([ImageFont.truetype(font_path, size=size)
                                    for font_path in self.font_path_list])
+        if self.direction == 'horizontal':
+            self.im_h = 32
+            self.im_w = 512
+        else:
+            self.im_h = 512
+            self.im_w = 32
 
-    @classmethod
-    def gen_background(cls):
+    def gen_background(self):
+        """
+        生成背景;随机背景|纯色背景|合成背景
+        :return:
+        """
         a = random.random()
+        pure_bg = np.ones((self.im_h, self.im_w, 3)) * np.array(random_color(0, 100))
+        random_bg = np.random.rand(self.im_h, self.im_w, 3) * 100
         if a < 0.1:
-            return np.random.rand(32, 512, 3) * 100
+            return random_bg
         elif a < 0.8:
-            return np.zeros((32, 512, 3)) * np.array(random_color(0, 100)) * 100 / 255
+            return pure_bg
         else:
             b = random.random()
-            return b * np.random.rand(32, 512, 3) * 100 + \
-                   (1 - b) * np.zeros((32, 512, 3)) * np.array(random_color(0, 100)) * 100 / 255
+            mix_bg = b * pure_bg + (1 - b) * random_bg
+            return mix_bg
+
+    def horizontal_draw(self, draw, text, font, color, char_w, char_h):
+        """
+        水平方向文字合成
+        :param draw:
+        :param text:
+        :param font:
+        :param color:
+        :param char_w:
+        :param char_h:
+        :return:
+        """
+        text_w = len(text) * char_w
+        h_margin = max(self.im_h - char_h, 1)
+        w_margin = max(self.im_w - text_w, 1)
+        x_shift = np.random.randint(0, w_margin)
+        y_shift = np.random.randint(0, h_margin)
+        i = 0
+        while i < len(text):
+            draw.text((x_shift, y_shift), text[i], color, font=font)
+            i += 1
+            x_shift += char_w
+            y_shift = np.random.randint(0, h_margin)
+            # 如果下个字符超出图像，则退出
+            if x_shift + char_w > self.im_w:
+                break
+        return text[:i]
+
+    def vertical_draw(self, draw, text, font, color, char_w, char_h):
+        """
+        锤子方向文字生成
+        :param draw:
+        :param text:
+        :param font:
+        :param color:
+        :param char_w:
+        :param char_h:
+        :return:
+        """
+        text_h = len(text) * char_h
+        h_margin = max(self.im_h - text_h, 1)
+        w_margin = max(self.im_w - char_w, 1)
+        x_shift = np.random.randint(0, w_margin)
+        y_shift = np.random.randint(0, h_margin)
+        i = 0
+        while i < len(text):
+            draw.text((x_shift, y_shift), text[i], color, font=font)
+            i += 1
+            x_shift = np.random.randint(0, w_margin)
+            y_shift += char_h
+            # 如果下个字符超出图像，则退出
+            if y_shift + char_h > self.im_h:
+                break
+        return text[:i]
+
+    def draw_text(self, draw, text, font, color, char_w, char_h):
+        if self.direction == 'horizontal':
+            return self.horizontal_draw(draw, text, font, color, char_w, char_h)
+        return self.vertical_draw(draw, text, font, color, char_w, char_h)
 
     def gen_image(self):
         idx = np.random.randint(len(self.max_len_list))
@@ -74,41 +149,45 @@ class Generator(Dataset):
         image = image.astype(np.uint8)
         target_len = int(np.random.uniform(self.min_len, self.max_len_list[idx], size=1))
 
-        while True:
-            # 随机选择size,font
-            size_idx = np.random.randint(len(self.font_size_list))
-            font_idx = np.random.randint(len(self.font_path_list))
-            font = self.font_list[size_idx][font_idx]
-            font_path = self.font_path_list[font_idx]
-            # 在选中font字体的可见字符中随机选择target_len个字符
-            text = np.random.choice(FONT_CHARS_DICT[font_path], target_len)
-            text = ''.join(text)
-            w, h = font.getsize(text)
-            # 文字在图像尺寸内,即退出
-            if w <= 512 and h <= 32:
-                break
-            # print('font_path:{},size:{}'.format(font_path, self.font_size_list[size_idx]))
+        # 随机选择size,font
+        size_idx = np.random.randint(len(self.font_size_list))
+        font_idx = np.random.randint(len(self.font_path_list))
+        font = self.font_list[size_idx][font_idx]
+        font_path = self.font_path_list[font_idx]
+        # 在选中font字体的可见字符中随机选择target_len个字符
+        text = np.random.choice(FONT_CHARS_DICT[font_path], target_len)
+        text = ''.join(text)
+        # 计算字体的w和h
+        w, char_h = font.getsize(text)
+        char_w = int(w / len(text))
 
+        # 写文字，生成图像
+        im = Image.fromarray(image)
+        draw = ImageDraw.Draw(im)
+        color = tuple(random_color(105, 255))
+        text = self.draw_text(draw, text, font, color, char_w, char_h)
+        target_len = len(text)  # target_len可能变小了
         # 对应的类别
         indices = np.array([self.alpha.index(c) for c in text])
-        # 计算边缘空白大小
-        h_margin = max(32 - h, 1)
-        w_margin = max(512 - w, 1)
-
-        color = random_color(105, 255)
-        image = put_text(image, np.random.randint(w_margin), np.random.randint(h_margin),
-                         text, font, tuple(color))
+        # 转为灰度图
+        image = np.array(im)
         image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+        # 亮度反转
         if random.random() > 0.5:
             image = 255 - image
         return image, indices, target_len
 
     def __getitem__(self, item):
         image, indices, target_len = self.gen_image()
-        image = np.transpose(image[:, :, np.newaxis], axes=(2, 1, 0))  # [H,W,C]=>[C,W,H]
+        if self.direction == 'horizontal':
+            image = np.transpose(image[:, :, np.newaxis], axes=(2, 1, 0))  # [H,W,C]=>[C,W,H]
+        else:
+            image = np.transpose(image[:, :, np.newaxis], axes=(2, 0, 1))  # [H,W,C]=>[C,H,W]
+        # 标准化
         image = image.astype(np.float32) / 255.
         image -= 0.5
         image /= 0.5
+
         target = np.zeros(shape=(self.max_len,), dtype=np.long)
         target[:target_len] = indices
         input_len = 31
@@ -120,7 +199,7 @@ class Generator(Dataset):
 
 def test_image_gen():
     from config import cfg
-    gen = Generator(cfg.word.get_all_words())
+    gen = Generator(cfg.word.get_all_words(), direction='vertical')
     for i in range(100):
         im, indices, target_len = gen.gen_image()
         cv2.imwrite('images/examples-{:03d}.jpg'.format(i + 1), im)
