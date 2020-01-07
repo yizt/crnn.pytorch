@@ -42,7 +42,9 @@ class Word(object):
     @classmethod
     def get_chinese_words(cls):
         cur_dir = os.path.dirname(__file__)
-        f = codecs.open(os.path.join(cur_dir, 'chinese_word.txt'),
+        # f = codecs.open(os.path.join(cur_dir, 'chinese_word.txt'),
+        #                 mode='r', encoding='utf-8')
+        f = codecs.open(os.path.join(cur_dir, 'char_std_5990.txt'),
                         mode='r', encoding='utf-8')
         lines = f.readlines()
         f.close()
@@ -58,18 +60,25 @@ class Word(object):
         return '$¥'
 
     def get_all_words(self):
-        words = ' '
-        if self.chinese_word:
-            words += self.get_chinese_words()
-        if self.alphabet:
-            words += self.get_alphabet()
-        if self.digit:
-            words += self.get_digits()
-        if self.punctuation:
-            words += self.get_punctuations()
-        if self.currency:
-            words += self.get_currency()
-        return words
+        # words = ' '
+        # if self.chinese_word:
+        #     words += self.get_chinese_words()
+        # if self.alphabet:
+        #     words += self.get_alphabet()
+        # if self.digit:
+        #     words += self.get_digits()
+        # if self.punctuation:
+        #     words += self.get_punctuations()
+        # if self.currency:
+        #     words += self.get_currency()
+        # return words
+        cur_dir = os.path.dirname(__file__)
+        f = codecs.open(os.path.join(cur_dir, 'all_words.txt'),
+                        mode='r', encoding='utf-8')
+        lines = f.readlines()
+        f.close()
+        lines = [l.strip() for l in lines]
+        return ''.join(lines)
 
 
 if __name__ == "__main__":
