@@ -85,9 +85,9 @@ class Generator(Dataset):
             text = ''.join(text)
             w, h = font.getsize(text)
             # 文字在图像尺寸内,即退出
-            if w <= 512 or h <= 32:
+            if w <= 512 and h <= 32:
                 break
-            print('font_path:{},size:{}'.format(font_path, self.font_size_list[size_idx]))
+            # print('font_path:{},size:{}'.format(font_path, self.font_size_list[size_idx]))
 
         # 对应的类别
         indices = np.array([self.alpha.index(c) for c in text])
