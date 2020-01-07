@@ -78,7 +78,7 @@ class Word(object):
         lines = f.readlines()
         f.close()
         lines = [l.strip() for l in lines]
-        return ''.join(lines)
+        return ' '+''.join(lines)
 
 
 if __name__ == "__main__":
