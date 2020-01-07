@@ -12,6 +12,8 @@ import numpy as np
 from PIL import Image, ImageDraw, ImageFont
 from torch.utils.data.dataset import Dataset
 
+from fontutils import FONT_CHARS_DICT
+
 
 def random_color(lower_val, upper_val):
     return [random.randint(lower_val, upper_val),
@@ -43,11 +45,16 @@ class Generator(Dataset):
         super(Generator, self).__init__()
         # self.alpha = ' 0123456789abcdefghijklmnopqrstuvwxyz'
         self.alpha = alpha
+        self.alpha_list = list(alpha)
         self.min_len = 5
         self.max_len_list = [16, 19, 24, 26]
         self.max_len = max(self.max_len_list)
         self.font_size_list = [30, 25, 20, 18]
-        self.font_list = [ImageFont.truetype('fonts/simsun.ttc', size=s) for s in self.font_size_list]
+        self.font_path_list = list(FONT_CHARS_DICT.keys())
+        self.font_list = []  # 二位列表[size,font]
+        for size in self.font_size_list:
+            self.font_list.append([ImageFont.truetype(font_path, size=size)
+                                   for font_path in self.font_path_list])
 
     @classmethod
     def gen_background(cls):
@@ -66,11 +73,31 @@ class Generator(Dataset):
         image = self.gen_background()
         image = image.astype(np.uint8)
         target_len = int(np.random.uniform(self.min_len, self.max_len_list[idx], size=1))
-        indices = np.random.choice(range(1, len(self.alpha)), target_len)
-        text = [self.alpha[idx] for idx in indices]
+
+        while True:
+            # 随机选择size,font
+            size_idx = np.random.randint(len(self.font_size_list))
+            font_idx = np.random.randint(len(self.font_path_list))
+            font = self.font_list[size_idx][font_idx]
+            font_path = self.font_path_list[font_idx]
+            # 在选中font字体的可见字符中随机选择target_len个字符
+            text = np.random.choice(FONT_CHARS_DICT[font_path], target_len)
+            text = ''.join(text)
+            w, h = font.getsize(text)
+            # 文字在图像尺寸内,即退出
+            if w <= 512 or h <= 32:
+                break
+            print('font_path:{},size:{}'.format(font_path, self.font_size_list[size_idx]))
+
+        # 对应的类别
+        indices = np.array([self.alpha.index(c) for c in text])
+        # 计算边缘空白大小
+        h_margin = max(32 - h, 1)
+        w_margin = max(512 - w, 1)
+
         color = random_color(105, 255)
-        image = put_text(image, 3, np.random.randint(1, 32 - self.font_size_list[idx]), ''.join(text),
-                         self.font_list[idx], tuple(color))
+        image = put_text(image, np.random.randint(w_margin), np.random.randint(h_margin),
+                         text, font, tuple(color))
         image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
         if random.random() > 0.5:
             image = 255 - image
@@ -94,9 +121,9 @@ class Generator(Dataset):
 def test_image_gen():
     from config import cfg
     gen = Generator(cfg.word.get_all_words())
-    for i in range(10):
+    for i in range(100):
         im, indices, target_len = gen.gen_image()
-        cv2.imwrite('images/examples-{:02d}.jpg'.format(i + 1), im)
+        cv2.imwrite('images/examples-{:03d}.jpg'.format(i + 1), im)
         print(''.join([gen.alpha[j] for j in indices]))
 
 
