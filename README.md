@@ -42,6 +42,9 @@ a)水平文字识别结果
 | ![](images/horizontal-010.jpg) | 桃顸噢伯臣 |
 
 b)垂直文字识别结果
+
+
+
 | Image1                       | Image2                       | Image3                       | Image4                       | Image5                       | Image6                       | Image7                       | Image8                       | Image9                       | Image10                      |
 | ---------------------------- | ---------------------------- | ---------------------------- | ---------------------------- | ---------------------------- | ---------------------------- | ---------------------------- | ---------------------------- | ---------------------------- | ---------------------------- |
 | ![](images/vertical-001.jpg) | ![](images/vertical-002.jpg) | ![](images/vertical-003.jpg) | ![](images/vertical-004.jpg) | ![](images/vertical-005.jpg) | ![](images/vertical-006.jpg) | ![](images/vertical-007.jpg) | ![](images/vertical-008.jpg) | ![](images/vertical-009.jpg) | ![](images/vertical-010.jpg) |
