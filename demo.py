@@ -19,13 +19,18 @@ from config import cfg
 def load_image(image_path):
     image = np.array(Image.open(image_path))
     h, w = image.shape[:2]
-    if h != 32:
+    if h != 32 and h < w:
         new_w = int(w * 32 / h)
         image = cv2.resize(image, (new_w, 32))
+    if w != 32 and w < h:
+        new_h = int(h * 32 / w)
+        image = cv2.resize(image, (32, new_h))
 
     image = Image.fromarray(image).convert('L')
     # cv2.imwrite(image_path, np.array(image))
-    image = np.array(image).T  # [W,H]
+    image = np.array(image)
+    if h < w:
+        image = np.array(image).T  # [W,H]
     image = image.astype(np.float32) / 255.
     image -= 0.5
     image /= 0.5
