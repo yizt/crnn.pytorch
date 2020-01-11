@@ -26,6 +26,8 @@ python demo.py --weight-path /path/to/chk.pth --image-dir /path/to/image/dir
 
 ​             以下图像均来为生成器随机生成的,也可以试用自己的图像测试
 
+a)水平文字识别结果
+
 | 图像 | 识别结果 |
 | ------------------------------ | ---------------------------- |
 | ![](images/horizontal-001.jpg) | 鎏贬冱剽粥碍辆置钷固闻塔ど船 |
@@ -38,9 +40,25 @@ python demo.py --weight-path /path/to/chk.pth --image-dir /path/to/image/dir
 | ![](images/horizontal-008.jpg) | 憎豼蕖蚷願巇廾尖瞚寣眗媝页锧荰瞿睔 |
 | ![](images/horizontal-009.jpg) | 休衷餐郄俐徂煅黢让咣 |
 | ![](images/horizontal-010.jpg) | 桃顸噢伯臣 |
-| ![](images/vertical-001.jpg)![](images/vertical-002.jpg)![](images/vertical-003.jpg)![](images/vertical-004.jpg)![](images/vertical-005.jpg)![](images/vertical-006.jpg)![](images/vertical-007.jpg)![](images/vertical-008.jpg)![](images/vertical-009.jpg)![](images/vertical-010.jpg) | 蟒销咔侉糌圻、醵姹探里坌葺神赵漓、紊趼掰膊縉氺月、皱坊凋庳剜蓍赚拾赣缮、ⅲ樱妖遐灌纽枰孽笸逼⊙斟喧湄汇、铳颢汜橇忝稿┗淌㎞琉炭盛㈨事、ゆ囚具憎鉴蔟馍络ら裕翱偬、绸唿綜袼殊潸名廪收鈁跃唤蛴腕、斥嗡门彳鹪Ⅴ戝物据趱欹、覃追煮茫舔酾桎藏瘪挚檎笏嵊疙鹦 |
 
+b)垂直文字识别结果
+| Image1                       | Image2                       | Image3                       | Image4                       | Image5                       | Image6                       | Image7                       | Image8                       | Image9                       | Image10                      |
+| ---------------------------- | ---------------------------- | ---------------------------- | ---------------------------- | ---------------------------- | ---------------------------- | ---------------------------- | ---------------------------- | ---------------------------- | ---------------------------- |
+| ![](images/vertical-001.jpg) | ![](images/vertical-002.jpg) | ![](images/vertical-003.jpg) | ![](images/vertical-004.jpg) | ![](images/vertical-005.jpg) | ![](images/vertical-006.jpg) | ![](images/vertical-007.jpg) | ![](images/vertical-008.jpg) | ![](images/vertical-009.jpg) | ![](images/vertical-010.jpg) |
 
+从左到右识别结果
+```
+蟒销咔侉糌圻
+醵姹探里坌葺神赵漓
+紊趼掰膊縉氺月
+皱坊凋庳剜蓍赚拾赣缮
+ⅲ樱妖遐灌纽枰孽笸逼⊙斟喧湄汇
+铳颢汜橇忝稿┗淌㎞琉炭盛㈨事
+ゆ囚具憎鉴蔟馍络ら裕翱偬
+绸唿綜袼殊潸名廪收鈁跃唤蛴腕
+斥嗡门彳鹪Ⅴ戝物据趱欹
+覃追煮茫舔酾桎藏瘪挚檎笏嵊疙鹦
+```
 
 ## 训练
 
