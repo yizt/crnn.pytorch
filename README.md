@@ -4,7 +4,7 @@
 
 
 ## 预测
-   预训练模型下载地址:水平模型[crnn.horizontal.060.pth]( https://pan.baidu.com/s/1NxR6XwJgPx9kslbFMO0X0A) 提取码: k92d; 垂直模型 [crnn.vertical.090.pth](https://pan.baidu.com/s/1VsW2K4G0g0QX5W3Lb3SoAw) 提取码: ygx7。
+   预训练模型下载地址:水平模型 [crnn.horizontal.060.pth]( https://pan.baidu.com/s/1NxR6XwJgPx9kslbFMO0X0A) 提取码: k92d; 垂直模型 [crnn.vertical.090.pth](https://pan.baidu.com/s/1VsW2K4G0g0QX5W3Lb3SoAw) 提取码: ygx7。
 
 a) 执行如下命令预测单个图像
 
@@ -62,6 +62,7 @@ python -m torch.distributed.launch --nproc_per_node 4 train.py --device cuda --d
 
 b) 多机多卡
 ```shell
+# 第一台主机
 export NCCL_SOCKET_IFNAME=eth0
 export NCCL_IB_DISABLE=1
 export CUDA_DEVICE_ORDER="PCI_BUS_ID"
@@ -70,7 +71,7 @@ python -m torch.distributed.launch --nproc_per_node 3 --nnodes=2 --node_rank=0 \
 --master_port=6066 --master_addr="192.168.0.1" \
 train.py --device cuda --direction vertical 
 
-
+# 第二台主机
 export NCCL_SOCKET_IFNAME=eth0
 export NCCL_IB_DISABLE=1
 export CUDA_DEVICE_ORDER="PCI_BUS_ID"
