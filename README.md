@@ -4,7 +4,7 @@
 
 
 ## 预测
-   预训练模型下载地址:水平模型 [crnn.horizontal.060.pth]( https://pan.baidu.com/s/1NxR6XwJgPx9kslbFMO0X0A) 提取码: k92d; 垂直模型 [crnn.vertical.090.pth](https://pan.baidu.com/s/1VsW2K4G0g0QX5W3Lb3SoAw) 提取码: ygx7。
+   预训练模型下载地址:水平模型 [crnn.horizontal.060.pth](https://pan.baidu.com/s/1NxR6XwJgPx9kslbFMO0X0A) 提取码: k92d; 垂直模型 [crnn.vertical.090.pth](https://pan.baidu.com/s/1VsW2K4G0g0QX5W3Lb3SoAw) 提取码: ygx7。
 
 a) 执行如下命令预测单个图像
 
