@@ -84,6 +84,7 @@ def ocr_rest():
     img = pre_process_image(img, h, w)
     # 预测
     text = inference(img, h, w)
+    text = ''.join(text)
 
     return {'text': text}
 
@@ -98,18 +99,17 @@ def start_tornado(app, port=5000):
 
 if __name__ == '__main__':
     parse = argparse.ArgumentParser()
-    parse.add_argument('-h', "--horizontal-weight-path", type=str, default=None, help="weight path")
-    parse.add_argument('-v', "--vertical-weight-path", type=str, default=None, help="weight path")
+    parse.add_argument('-l', "--weight-path-horizontal", type=str, default=None, help="weight path")
+    parse.add_argument('-v', "--weight-path-vertical", type=str, default=None, help="weight path")
     args = parse.parse_args(sys.argv[1:])
     alpha = cfg.word.get_all_words()
-    # 加载权重
+    # 加载权重，水平方向
     h_net = crnn.CRNN(num_classes=len(alpha))
-    h_net.load_state_dict(torch.load(args.horizontal_weight_path, map_location='cpu')['model'])
+    h_net.load_state_dict(torch.load(args.weight_path_horizontal, map_location='cpu')['model'])
     h_net.eval()
     # 垂直方向
     v_net = crnn.CRNN(num_classes=len(alpha))
-    v_net.load_state_dict(torch.load(args.vertical_weight_path, map_location='cpu')['model'])
+    v_net.load_state_dict(torch.load(args.weight_path_vertical, map_location='cpu')['model'])
     v_net.eval()
-
     # 启动restful服务
     start_tornado(app, 5000)
