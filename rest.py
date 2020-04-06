@@ -8,6 +8,7 @@
 
 import argparse
 import base64
+import itertools
 import sys
 
 import cv2
@@ -47,6 +48,28 @@ def pre_process_image(image, h, w):
     return image
 
 
+def inference(image, h, w):
+    """
+    预测图像
+    :param image: [H,W]
+    :param h: 图像高度
+    :param w: 图像宽度
+    :return: text
+    """
+    image = torch.FloatTensor(image)
+
+    if h > w:
+        predict = v_net(image)[0].detach().numpy()  # [W,num_classes]
+    else:
+        predict = h_net(image)[0].detach().numpy()  # [W,num_classes]
+
+    label = np.argmax(predict[:], axis=1)
+    label = [alpha[class_id] for class_id in label]
+    label = [k for k, g in itertools.groupby(list(label))]
+    # label = ''.join(label).replace(' ', '')
+    return label
+
+
 @app.route('/crnn', methods=['POST'])
 def ocr_rest():
     """
@@ -55,12 +78,14 @@ def ocr_rest():
 
     img = base64.decodebytes(request.form.get('img').encode())
     img = np.frombuffer(img, dtype=np.uint8)
-    shape = request.form.getlist('shape', type=int)
-    img = img.reshape(shape)
-    img = pre_process_image(img)
-    cv2.imwrite('abc.jpg', img)
+    h, w = request.form.getlist('shape', type=int)
+    img = img.reshape((h, w))
+    # 预处理
+    img = pre_process_image(img, h, w)
+    # 预测
+    text = inference(img, h, w)
 
-    return {'a': 'yes'}
+    return {'text': text}
 
 
 def start_tornado(app, port=5000):
