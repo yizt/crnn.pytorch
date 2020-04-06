@@ -25,7 +25,6 @@ app = Flask(__name__)
 app.config["JSON_AS_ASCII"] = False
 
 
-
 def pre_process_image(image, h, w):
     """
 
@@ -101,7 +100,9 @@ def start_tornado(app, port=5000):
 
 if __name__ == '__main__':
     """
-    Usage: python rest.py -l output/crnn.horizontal.060.pth -v output/crnn.vertical.090.pth
+    Usage: 
+    export KMP_DUPLICATE_LIB_OK=TRUE
+    python rest.py -l output/crnn.horizontal.060.pth -v output/crnn.vertical.090.pth
     """
     parse = argparse.ArgumentParser()
     parse.add_argument('-l', "--weight-path-horizontal", type=str, default=None, help="weight path")
