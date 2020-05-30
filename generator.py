@@ -190,7 +190,7 @@ class Generator(Dataset):
 
         target = np.zeros(shape=(self.max_len,), dtype=np.long)
         target[:target_len] = indices
-        input_len = 31
+        input_len = self.im_w // 4 - 3
         return image, target, input_len, target_len
 
     def __len__(self):
@@ -199,10 +199,10 @@ class Generator(Dataset):
 
 def test_image_gen(direction='vertical'):
     from config import cfg
-    gen = Generator(cfg.word.get_all_words(), direction=direction)
+    gen = Generator(cfg.word.get_all_words()[:10], direction=direction)
     for i in range(10):
         im, indices, target_len = gen.gen_image()
-        cv2.imwrite('images/{}-{:03d}.jpg'.format(direction, i + 1), im)
+        # cv2.imwrite('output/{}-{:03d}.jpg'.format(direction, i + 1), im)
         print(''.join([gen.alpha[j] for j in indices]))
 
 
@@ -222,6 +222,6 @@ def test_font_size():
 
 if __name__ == '__main__':
     test_image_gen('horizontal')
-    test_image_gen('vertical')
+    # test_image_gen('vertical')
     # test_gen()
     # test_font_size()

@@ -24,13 +24,13 @@ class CRNN(nn.Module):
 
             ('conv_block_3_1', _ConvBlock(128, 256)),  # [B,256,W/4,8]
             ('conv_block_3_2', _ConvBlock(256, 256)),  # [B,256,W/4,8]
-            ('max_pool_3', nn.MaxPool2d((1, 2), 2)),  # [B,256,W/8,4]
+            ('max_pool_3', nn.MaxPool2d((2, 2), (1, 2))),  # [B,256,W/4,4]
 
-            ('conv_block_4_1', _ConvBlock(256, 512, bn=True)),  # [B,512,W/8,4]
-            ('conv_block_4_2', _ConvBlock(512, 512, bn=True)),  # [B,512,W/8,4]
-            ('max_pool_4', nn.MaxPool2d((1, 2), 2)),  # [B,512,W/16,2]
+            ('conv_block_4_1', _ConvBlock(256, 512, bn=True)),  # [B,512,W/4,4]
+            ('conv_block_4_2', _ConvBlock(512, 512, bn=True)),  # [B,512,W/4,4]
+            ('max_pool_4', nn.MaxPool2d((2, 2), (1, 2))),  # [B,512,W/4,2]
 
-            ('conv_block_5', _ConvBlock(512, 512, kernel_size=2, padding=0))  # [B,512,W/16,1]
+            ('conv_block_5', _ConvBlock(512, 512, kernel_size=2, padding=0))  # [B,512,W/4,1]
         ]))
 
         self.rnn1 = nn.GRU(512, 256, batch_first=True, bidirectional=True)
