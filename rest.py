@@ -60,9 +60,11 @@ def inference(image, h, w):
     image = torch.FloatTensor(image)
 
     if h > w:
-        predict = v_net(image)[0].detach().numpy()  # [W,num_classes]
+        predict = v_net(image)[0].detach().cpu().numpy()  # [W,num_classes]
     else:
-        predict = h_net(image)[0].detach().numpy()  # [W,num_classes]
+        predict = h_net(image)[0].detach().cpu().numpy()  # [W,num_classes]
+
+    image.to(device)
 
     label = np.argmax(predict[:], axis=1)
     label = [alpha[class_id] for class_id in label]
@@ -107,15 +109,20 @@ if __name__ == '__main__':
     parse = argparse.ArgumentParser()
     parse.add_argument('-l', "--weight-path-horizontal", type=str, default=None, help="weight path")
     parse.add_argument('-v', "--weight-path-vertical", type=str, default=None, help="weight path")
+    parse.add_argument("--device", type=str, default='cpu', help="cpu or cuda")
     args = parse.parse_args(sys.argv[1:])
     alpha = cfg.word.get_all_words()
+
+    device = torch.device('cuda' if args.device == 'cuda' and torch.cuda.is_available() else 'cpu')
     # 加载权重，水平方向
     h_net = crnn.CRNN(num_classes=len(alpha))
     h_net.load_state_dict(torch.load(args.weight_path_horizontal, map_location='cpu')['model'])
     h_net.eval()
+    h_net.to(device)
     # 垂直方向
     v_net = crnn.CRNNV(num_classes=len(alpha))
     v_net.load_state_dict(torch.load(args.weight_path_vertical, map_location='cpu')['model'])
     v_net.eval()
+    v_net.to(device)
     # 启动restful服务
     start_tornado(app, 5000)
