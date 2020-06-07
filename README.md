@@ -18,18 +18,27 @@
 ## 预测
 ### 直接预测
 
-   预训练模型下载地址:水平模型 [crnn.horizontal.060.pth](https://pan.baidu.com/s/1NxR6XwJgPx9kslbFMO0X0A) 提取码: k92d; 垂直模型 [crnn.vertical.090.pth](https://pan.baidu.com/s/1VsW2K4G0g0QX5W3Lb3SoAw) 提取码: ygx7。
+   预训练模型下载地址:水平模型 [crnn.horizontal.061.pth](https://pan.baidu.com/s/1beTiTtHMdpOZ9wkqPwODQg) 提取码: fguu; 垂直模型 [crnn.vertical.090.pth](https://pan.baidu.com/s/1VsW2K4G0g0QX5W3Lb3SoAw) 提取码: ygx7。
 
 a) 执行如下命令预测单个图像
 
+  
 ```bash
-python demo.py --weight-path /path/to/chk.pth --image-path /path/to/image
+# 水平方向
+python demo.py --weight-path /path/to/chk.pth --image-path /path/to/image --direction horizontal
+# 垂直方向
+python demo.py --weight-path /path/to/chk.pth --image-path /path/to/image --direction vertical
+
 ```
+
 
 b) 执行如下命令预测图像目录
 
 ```bash
-python demo.py --weight-path /path/to/chk.pth --image-dir /path/to/image/dir
+# 水平方向
+python demo.py --weight-path /path/to/chk.pth --image-dir /path/to/image/dir --direction horizontal
+# 垂直方向
+python demo.py --weight-path /path/to/chk.pth --image-dir /path/to/image/dir --direction vertical
 ```
 
 ### 使用restful服务预测
@@ -37,7 +46,7 @@ python demo.py --weight-path /path/to/chk.pth --image-dir /path/to/image/dir
 a) 启动restful服务
 
 ```shell
-python rest.py -l /path/to/crnn.horizontal.060.pth -v /path/to/crnn.vertical.090.pth
+python rest.py -l /path/to/crnn.horizontal.061.pth -v /path/to/crnn.vertical.090.pth
 ```
 
 b) 使用如下代码预测，参考`rest_test.py`
