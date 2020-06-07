@@ -55,7 +55,10 @@ def inference_image(net, alpha, image_path):
 
 def main(args):
     alpha = cfg.word.get_all_words()
-    net = crnn.CRNN(num_classes=len(alpha))
+    if args.direction == 'horizontal':
+        net = crnn.CRNN(num_classes=len(alpha))
+    else:
+        net = crnn.CRNNV(num_classes=len(alpha))
     net.load_state_dict(torch.load(args.weight_path, map_location='cpu')['model'])
     net.eval()
     # load image
@@ -72,6 +75,8 @@ def main(args):
 
 if __name__ == '__main__':
     parse = argparse.ArgumentParser()
+    parse.add_argument("--direction", type=str, choices=['horizontal', 'vertical'],
+                       default='horizontal', help="horizontal or vertical")
     parse.add_argument("--image-path", type=str, default=None, help="test image path")
     parse.add_argument("--weight-path", type=str, default=None, help="weight path")
     parse.add_argument("--image-dir", type=str, default=None, help="test image directory")
