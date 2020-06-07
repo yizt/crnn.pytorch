@@ -102,7 +102,7 @@ if __name__ == '__main__':
     """
     Usage: 
     export KMP_DUPLICATE_LIB_OK=TRUE
-    python rest.py -l output/crnn.horizontal.060.pth -v output/crnn.vertical.090.pth
+    python rest.py -l output/crnn.horizontal.061.pth -v output/crnn.vertical.090.pth
     """
     parse = argparse.ArgumentParser()
     parse.add_argument('-l', "--weight-path-horizontal", type=str, default=None, help="weight path")
