@@ -114,7 +114,7 @@ if __name__ == '__main__':
     h_net.load_state_dict(torch.load(args.weight_path_horizontal, map_location='cpu')['model'])
     h_net.eval()
     # 垂直方向
-    v_net = crnn.CRNN(num_classes=len(alpha))
+    v_net = crnn.CRNNV(num_classes=len(alpha))
     v_net.load_state_dict(torch.load(args.weight_path_vertical, map_location='cpu')['model'])
     v_net.eval()
     # 启动restful服务
