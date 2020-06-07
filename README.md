@@ -46,7 +46,7 @@ python demo.py --weight-path /path/to/chk.pth --image-dir /path/to/image/dir --d
 a) 启动restful服务
 
 ```shell
-python rest.py -l /path/to/crnn.horizontal.061.pth -v /path/to/crnn.vertical.090.pth
+python rest.py -l /path/to/crnn.horizontal.061.pth -v /path/to/crnn.vertical.090.pth -d cuda
 ```
 
 b) 使用如下代码预测，参考`rest_test.py`

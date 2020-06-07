@@ -104,12 +104,12 @@ if __name__ == '__main__':
     """
     Usage: 
     export KMP_DUPLICATE_LIB_OK=TRUE
-    python rest.py -l output/crnn.horizontal.061.pth -v output/crnn.vertical.090.pth
+    python rest.py -l output/crnn.horizontal.061.pth -v output/crnn.vertical.090.pth -d cuda
     """
     parse = argparse.ArgumentParser()
     parse.add_argument('-l', "--weight-path-horizontal", type=str, default=None, help="weight path")
     parse.add_argument('-v', "--weight-path-vertical", type=str, default=None, help="weight path")
-    parse.add_argument("--device", type=str, default='cpu', help="cpu or cuda")
+    parse.add_argument('-d', "--device", type=str, default='cpu', help="cpu or cuda")
     args = parse.parse_args(sys.argv[1:])
     alpha = cfg.word.get_all_words()
 
