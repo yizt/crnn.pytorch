@@ -168,8 +168,7 @@ if __name__ == '__main__':
     parser.add_argument("--init-epoch", type=int, default=0, help="init epoch")
     parser.add_argument("--lr", type=float, default=1e-2, help="learning rate")
     parser.add_argument('--momentum', default=0.9, type=float, help='momentum')
-    parser.add_argument('--wd', '--weight-decay', default=0, type=float,
-                        help='weight decay (default: 0)', dest='weight decay')
+    parser.add_argument('--weight-decay', default=1e-5, type=float, help='weight decay (default: 0)')
     parser.add_argument('--lr-step-size', default=30, type=int, help='decrease lr every step-size epochs')
     parser.add_argument('--lr-gamma', default=0.1, type=float, help='decrease lr by a factor of lr-gamma')
 
