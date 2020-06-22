@@ -12,6 +12,10 @@ import numpy as np
 from PIL import Image, ImageDraw, ImageFont
 from fontTools.ttLib import TTFont
 
+from config import cfg
+
+word_set = set(cfg.word.get_all_words())
+
 
 def get_all_font_chars():
     """
@@ -25,7 +29,9 @@ def get_all_font_chars():
     font_chars_dict = dict()
     for font, font_path in zip(font_list, font_path_list):
         font_chars = get_font_chars(font_path)
-        font_chars = [c.strip() for c in font_chars if len(c) == 1 and is_char_visible(font, c)]  # 可见字符
+        font_chars = [c.strip() for c in font_chars if len(c) == 1 and
+                      word_set.__contains__(c) and
+                      is_char_visible(font, c)]  # 可见字符
         font_chars = list(set(font_chars))  # 去重
         font_chars.sort()
         font_chars_dict[font_path] = font_chars
