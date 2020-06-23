@@ -114,6 +114,24 @@ print(r.json()['text'])
 覃追煮茫舔酾桎藏瘪挚檎笏嵊疙鹦
 ```
 
+
+## 评估
+
+a) 水平方向
+```shell
+python eval.py --weight-path /path/to/crnn.horizontal.061.pth \
+--direction horizontal --device cuda
+
+```
+输出结果：`acc:0.893`
+
+b) 垂直方向
+```shell
+python eval.py --weight-path /path/to/crnn.vertical.090.pth \
+--direction vertical --device cuda
+```
+输出结果：`acc:0.523`
+
 ## 训练
 
 a) 单机多卡
