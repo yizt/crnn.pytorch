@@ -78,13 +78,13 @@ def ocr_rest():
     """
     :return:
     """
-
-    img = base64.decodebytes(request.form.get('img').encode())
-    img = np.frombuffer(img, dtype=np.uint8)
-    h, w = request.form.getlist('shape', type=int)
-    img = img.reshape((h, w))
+    img_bytes = base64.b64decode(request.json['img'].encode())
+    img = cv2.imdecode(np.frombuffer(img_bytes, "uint8"), 1)
+    # 转为灰度图
+    img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    h, w = img_gray.shape[:2]
     # 预处理
-    img = pre_process_image(img, h, w)
+    img = pre_process_image(img_gray, h, w)
     # 预测
     text = inference(img, h, w)
     text = ''.join(text)

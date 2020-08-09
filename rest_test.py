@@ -6,16 +6,18 @@
  @Description    :
 """
 
-import codecs
+import base64
 
-import cv2
 import requests
 
-img = cv2.imread('./images/horizontal-002.jpg', 0)
-h, w = img.shape
-data = {'img': codecs.encode(img.tostring(), 'base64'),  # 转为字节,并编码
-        'shape': [h, w]}
+img_path = './images/horizontal-002.jpg'
 
-r = requests.post("http://localhost:5000/crnn", data=data)
+with open(img_path, 'rb') as fp:
+    img_bytes = fp.read()
+
+img = base64.b64encode(img_bytes).decode()
+data = {'img': img}
+
+r = requests.post("http://localhost:5000/crnn", json=data)
 
 print(r.json()['text'])
