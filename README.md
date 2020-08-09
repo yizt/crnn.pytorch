@@ -53,15 +53,18 @@ python rest.py -l /path/to/crnn.horizontal.061.pth -v /path/to/crnn.vertical.090
 b) 使用如下代码预测，参考`rest_test.py`
 
 ```python
-import codecs
-import cv2
+import base64
 import requests
 
-img = cv2.imread('./images/horizontal-002.jpg', 0)
-h, w = img.shape
-data = {'img': codecs.encode(img.tostring(), 'base64'),  # 转为字节,并编码
-        'shape': [h, w]}
-r = requests.post("http://localhost:5000/crnn", data=data)
+img_path = './images/horizontal-002.jpg'
+
+with open(img_path, 'rb') as fp:
+    img_bytes = fp.read()
+
+img = base64.b64encode(img_bytes).decode()
+data = {'img': img}
+
+r = requests.post("http://localhost:5000/crnn", json=data)
 
 print(r.json()['text'])
 ```
