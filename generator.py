@@ -190,7 +190,10 @@ class Generator(Dataset):
 
         target = np.zeros(shape=(self.max_len,), dtype=np.long)
         target[:target_len] = indices
-        input_len = self.im_w // 4 - 3
+        if self.direction == 'horizontal':
+            input_len = self.im_w // 4 - 3
+        else:
+            input_len = self.im_w // 16 - 1
         return image, target, input_len, target_len
 
     def __len__(self):
