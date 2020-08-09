@@ -5,12 +5,13 @@
 1. [预测](#预测)<br>
     1.1 [直接预测](#直接预测)<br>
     1.2 [使用restful服务预测](#使用restful服务预测)<br>
-
 2. [模型效果](#模型效果)<br>
     2.1 [水平方向](#水平方向)<br>
     2.2 [垂直方向](#垂直方向)<br>
+3. [评估](#评估)<br>
+4. [训练](#训练)<br>
 
-3. [训练](#训练)<br>
+
 
 
 
@@ -22,7 +23,7 @@
 
 a) 执行如下命令预测单个图像
 
-  
+
 ```bash
 # 水平方向
 python demo.py --weight-path /path/to/chk.pth --image-path /path/to/image --direction horizontal
