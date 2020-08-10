@@ -58,13 +58,12 @@ def inference(image, h, w):
     :return: text
     """
     image = torch.FloatTensor(image)
+    image = image.to(device)
 
     if h > w:
         predict = v_net(image)[0].detach().cpu().numpy()  # [W,num_classes]
     else:
         predict = h_net(image)[0].detach().cpu().numpy()  # [W,num_classes]
-
-    image.to(device)
 
     label = np.argmax(predict[:], axis=1)
     label = [alpha[class_id] for class_id in label]
